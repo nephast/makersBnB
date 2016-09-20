@@ -35,23 +35,23 @@ _note: skip to next step if you're not using github_
 
 ## Connect Bookshelf(Knex) to PG
 
-* run `npm install knex --save` and `npm install bookshelf --save` 
+* run `npm install knex --save` and `npm install bookshelf --save`
 * touch `/models/database.js` a file to connect Bookshelf/Knex to PG
 * initialising bookshelf requires an initialised Knex so something like:
 
-```var knex = require('knex')({client: 'mysql', connection: process.env.DATABASE_URL || "postgres://localhost/project_name" });
+`var knex = require('knex')({client: 'mysql', connection: process.env.DATABASE_URL || "postgres://localhost/project_name" });
 
 var bookshelf = require('bookshelf')(knex);
-```
+`
 
 * create tables in your database with relations like so:
 
-```var User = bookshelf.Model.extend({
+`var User = bookshelf.Model.extend({
   tableName: 'users',
   posts: function() {
     return this.hasMany(Posts);
   }
 });
-```
+`
 
 * [RTFM](http://bookshelfjs.org/#examples)
