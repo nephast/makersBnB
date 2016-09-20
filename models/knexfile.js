@@ -3,45 +3,27 @@
 module.exports = {
 
   development: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
-      database: 'makersbnb_'
+      database: 'makersbnb_development'
+    },
+    migrations: {
+      directory: __dirname + '/migrations'
     }
   },
 
   test: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
-      database: 'makersbnb_',
-      user:     'username',
-      password: 'password'
+      database: 'makersbnb_test',
     },
     pool: {
       min: 2,
       max: 10
     },
     migrations: {
-      directory: __dirname + 'migrations'
+      directory: __dirname + '/migrations'
     }
-    // seeds: {
-    //   directory: __dirname + 'database.js'
-    // }
   },
-
-  // production: {
-  //   client: 'postgresql',
-  //   connection: {
-  //     database: 'my_db',
-  //     user:     'username',
-  //     password: 'password'
-  //   },
-  //   pool: {
-  //     min: 2,
-  //     max: 10
-  //   },
-  //   migrations: {
-  //     tableName: 'knex_migrations'
-  //   }
-  // }
 
 };
