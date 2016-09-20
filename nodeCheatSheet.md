@@ -5,6 +5,8 @@
 * setting up an ORM for node, routing it to a PostgreSQL DB
 * using Mocha, Chai and Zombie for testing
 
+_note: this is a work in progress, please improve it_
+
 ## Get Node
 
 * check if you already have node installed by running `node --version` or `which node` to locate it
@@ -29,33 +31,73 @@ _note: skip to next step if you're not using github_
 
 ## Set up a PostgreSQL DB and a driver for node
 
-* first ensure you have PostgreSQL and created a database for your project, if not [follow this](https://github.com/makersacademy/course/blob/master/bookmark_manager/walkthroughs/03_mac.md)
+* first ensure you have PostgreSQL and created two databases for your project, test and dev ones, if not [follow this](https://github.com/makersacademy/course/blob/master/bookmark_manager/walkthroughs/03_mac.md)
 * run `npm install pg`, the driver for Postgres (PG)
 * make sure it's required etc. in necessary places (app.js)
 
-## Connect Bookshelf(Knex) to PG
+## Connect Bookshelf(Knex) to PG and configure test and dev environments
 
-* run `npm install knex --save` and `npm install bookshelf --save`
-* touch `/models/database.js` a file to connect Bookshelf/Knex to PG
-* initialising bookshelf requires an initialised Knex so something like:
+* run `sudo npm install -g knex` and `npm install bookshelf --save`
+* `mkdir models` and then `cd` into it
+* run `knex init` which will make a knexfile.js similar to below, tweak it so it looks exactly this:
+```
+// Update with your config settings.
+
+module.exports = {
+
+  development: {
+    client: 'pg',
+    connection: {
+      database: 'project_name_development'
+    },
+    migrations: {
+      directory: __dirname + '/migrations'
+    }
+  },
+
+  test: {
+    client: 'pg',
+    connection: {
+      database: 'project_name_test',
+    },
+    pool: {
+      min: 2,
+      max: 10
+    },
+    migrations: {
+      directory: __dirname + '/migrations'
+    }
+  },
+
+};
 
 ```
-var knex = require('knex')({client: 'mysql', connection: process.env.DATABASE_URL || "postgres://localhost/project_name" });
-
-var bookshelf = require('bookshelf')(knex);
+* create a new file `touch models/knex.js` and add environment config:
 ```
+var environment = process.env.NODE_ENV || 'development';
+var config = require('./knexfile.js')[environment];
 
-* create tables in your database with relations like so:
-
+module.exports = require('knex')(config);
 ```
-var User = bookshelf.Model.extend({
-  tableName: 'users',
-  posts: function() {
-    return this.hasMany(Posts);
-  }
-});
+* run `knex migrate:make setup` which will create a directory called `migrations` with a skeleton schema
+* update this schema to reflect a desired database table, for example:
 ```
+exports.up = function(knex, Promise) {
+  return knex.schema.createTableIfNotExists('booking', function(table) {
+      table.increments();
+      table.date('date_start');
+      table.date('date_end');
+      table.integer('duration');
+      table.boolean('confirmation');
+      table.integer('guests');
+  });
+};
 
+exports.down = function(knex, Promise) {
+  return knex.schema.dropTable('booking');
+};
+```
+* run `knex migrate:latest --env test` or `knex migrate:latest --env development` to update the DB to reflect your schema
 * [RTFM](http://bookshelfjs.org/#examples)
 
 ## Using Mocha and Chai for testing
