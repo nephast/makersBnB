@@ -57,3 +57,7 @@ var User = bookshelf.Model.extend({
 ```
 
 * [RTFM](http://bookshelfjs.org/#examples)
+
+## Using Mocha and Chai for testing
+
+* get Mocha and Chai `npm install mocha chai --save-dev`
