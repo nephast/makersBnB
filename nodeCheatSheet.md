@@ -27,10 +27,34 @@ _note: skip to next step if you're not using github_
 * next, run `npm install` to ensure dependencies are installed
 * check out your local server by running `DEBUG=project_name:* npm start`
 
-## Set up a PostgreSQL DB and connect to node with an ORM
+## Set up a PostgreSQL DB and a driver for node
 
 * first ensure you have PostgreSQL and created a database for your project, if not [follow this](https://github.com/makersacademy/course/blob/master/bookmark_manager/walkthroughs/03_mac.md)
-* run `npm install pg`, the driver for Postgres
-* make sure it's required in necessary places
-* in the root directory of your project `touch models/database.js`
-* inside `database.js` write the following code we'll configure our ORM to talk with PostgreSQL
+* run `npm install pg`, the driver for Postgres (PG)
+* make sure it's required etc. in necessary places (app.js)
+
+## Connect Bookshelf(Knex) to PG
+
+* run
+```$ npm install knex --save
+$ npm install bookshelf --save
+```
+* touch `/models/database.js` a file to connect Bookshelf/Knex to PG
+* initialising bookshelf requires an initialised Knex so something like:
+
+```var knex = require('knex')({client: 'mysql', connection: process.env.DATABASE_URL || "postgres://localhost/project_name" });
+
+var bookshelf = require('bookshelf')(knex);
+```
+
+* create tables in your database with relations like so:
+
+```var User = bookshelf.Model.extend({
+  tableName: 'users',
+  posts: function() {
+    return this.hasMany(Posts);
+  }
+});
+```
+
+* [RTFM](http://bookshelfjs.org/#examples)
